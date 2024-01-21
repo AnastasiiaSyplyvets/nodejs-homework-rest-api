@@ -17,14 +17,13 @@ const getOneContact = async (req, res, next) => {
     const { contactId } = req.params;
     const result = await contacts.getContactById(contactId);
     if (!result) {
-      const error = new Error("Not found");
+      const error = Error("Not found");
       error.status = 404;
       throw error;
     }
     res.status(200).json(result);
   } catch (error) {
-    // res.status(404).json({ message: "Not found" });
-    next(error);
+    res.status(404).json(error.message);
   }
 };
 
@@ -32,9 +31,14 @@ const deleteContact = async (req, res, next) => {
   try {
     const { contactId } = req.params;
     const result = await contacts.removeContact(contactId);
+    if (!result) {
+      const error = Error("Not found");
+      error.status = 404;
+      throw error;
+    }
     res.status(200).json(result);
   } catch (error) {
-    res.status(404).json({ message: "Not found" });
+    res.status(404).json(error.message);
   }
 };
 
@@ -48,7 +52,6 @@ const createContact = async (req, res, next) => {
     const result = await contacts.addContact(req.body);
     res.status(201).json(result);
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -64,8 +67,7 @@ const updateContact = async (req, res, next) => {
     const result = await contacts.updateContact(contactId, req.body);
 
     if (!result) {
-      //   throw HttpError(400, error.message);
-      console.log(error.message);
+      throw HttpError(400, error.message);
     }
     res.sendStatus(200).json(result);
   } catch (error) {

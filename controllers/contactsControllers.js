@@ -17,9 +17,7 @@ const getOneContact = async (req, res, next) => {
     const { contactId } = req.params;
     const result = await contacts.getContactById(contactId);
     if (!result) {
-      const error = Error("Not found");
-      error.status = 404;
-      throw error;
+      throw HttpError(404, "Not found");
     }
     res.status(200).json(result);
   } catch (error) {
@@ -32,9 +30,7 @@ const deleteContact = async (req, res, next) => {
     const { contactId } = req.params;
     const result = await contacts.removeContact(contactId);
     if (!result) {
-      const error = Error("Not found");
-      error.status = 404;
-      throw error;
+      throw HttpError(404, "Not found");
     }
     res.status(200).json(result);
   } catch (error) {
@@ -46,7 +42,7 @@ const createContact = async (req, res, next) => {
   try {
     const { error } = addSchema.validate(req.body);
     if (error) {
-      throw new HttpError(400, error.message);
+      throw HttpError(400, error.message);
     }
 
     const result = await contacts.addContact(req.body);
@@ -58,18 +54,22 @@ const createContact = async (req, res, next) => {
 
 const updateContact = async (req, res, next) => {
   try {
+    if (!req.body) {
+      throw HttpError(400, { message: "Body must have at least one field" });
+    }
+
     const { error } = updateContactSchema.validate(req.body);
     if (error) {
-      res.json({ message: "Body must have at least one field" });
+      return res.json({ message: error.message });
     }
     const { contactId } = req.params;
 
     const result = await contacts.updateContact(contactId, req.body);
-
+    console.log("Updated contact:", result);
     if (!result) {
-      throw HttpError(400, error.message);
+      throw HttpError(400, "Not found");
     }
-    res.sendStatus(200).json(result);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }

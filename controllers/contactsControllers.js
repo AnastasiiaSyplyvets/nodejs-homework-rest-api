@@ -1,5 +1,5 @@
-const addSchema = require("../schemas/contactSchemas");
-const updateContactSchema = require("../schemas/contactSchemas");
+const { addSchema } = require("../schemas/contactSchemas");
+const { updateContactSchema } = require("../schemas/contactSchemas");
 const contacts = require("../models/contacts");
 const HttpError = require("../helpers/HttpError");
 

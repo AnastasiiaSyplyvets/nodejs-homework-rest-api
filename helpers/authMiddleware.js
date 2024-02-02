@@ -4,11 +4,9 @@ const { SECRET_KEY } = process.env;
 const { User } = require("../models/user");
 
 const authMiddleware = async (req, res, next) => {
-  console.log("authMiddleware");
-  console.log("req.headers", req.headers);
   const authHeader = req.headers.authorization || "";
 
-  console.log(authHeader);
+  console.log("token in middleware", authHeader);
   const [type, token] = authHeader.split(" ");
 
   if (type !== "Bearer") {
@@ -21,11 +19,11 @@ const authMiddleware = async (req, res, next) => {
     const { id } = jwt.verify(token, SECRET_KEY);
     const user = await User.findById(id);
     if (!user) {
-      next(HttpError(401));
+      next(HttpError(401), "Not authorized");
     }
-    console.log("user", user);
+
     req.user = user;
-    // res.status(200).json(user);
+
     next();
   } catch (error) {
     console.log(error);
@@ -35,7 +33,7 @@ const authMiddleware = async (req, res, next) => {
     ) {
       next(HttpError(401, "Token is not valid"));
     }
-    next();
+    return next(error);
   }
 };
 module.exports = { authMiddleware };

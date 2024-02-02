@@ -1,4 +1,9 @@
 const getInfo = async (req, res, next) => {
-  res.json(res.user);
+  const user = req.user;
+  res.status(200).json(
+    user
+    // email: user.email,
+    // subscription: user.subscription,
+  );
 };
 module.exports = { getInfo };

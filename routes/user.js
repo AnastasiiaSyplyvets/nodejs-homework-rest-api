@@ -6,6 +6,6 @@ const { authMiddleware } = require("../helpers/authMiddleware");
 
 router.post("/", authMiddleware, addContact);
 router.get("/contacts", authMiddleware, getContacts);
-router.get("/info", authMiddleware, getInfo);
+router.get("/current", authMiddleware, getInfo);
 
 module.exports = router;

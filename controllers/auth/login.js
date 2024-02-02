@@ -27,14 +27,19 @@ const login = async (req, res, next) => {
 
     const payload = { id: user._id };
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "5h" });
-    //   res.json(token)
+
+    user.token = token;
+    await user.save();
+
     res.status(201).json({
       token: token,
-      user: { email: user.email, subscription: user.subscription },
+      user: {
+        email: user.email,
+        subscription: user.subscription,
+      },
     });
   } catch (error) {
-    res.status(error.status).json(error.message);
-    // console.log(error.message);
+    res.status(500).json(error.message);
   }
 };
 module.exports = { login };

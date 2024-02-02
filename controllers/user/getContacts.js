@@ -1,4 +1,7 @@
 const getContacts = async (req, res, next) => {
-  res.json({ ok: true });
+  const { user } = req;
+  const { contacts } = user;
+
+  res.json({ contacts });
 };
 module.exports = { getContacts };

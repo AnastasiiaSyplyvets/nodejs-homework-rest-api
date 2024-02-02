@@ -1,12 +1,12 @@
 const HttpError = require("./HttpError");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const { SECRET_KEY } = process.env;
 const { User } = require("../models/user");
 
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization || "";
 
-  console.log("token in middleware", authHeader);
   const [type, token] = authHeader.split(" ");
 
   if (type !== "Bearer") {
@@ -33,7 +33,7 @@ const authMiddleware = async (req, res, next) => {
     ) {
       next(HttpError(401, "Token is not valid"));
     }
-    return next(error);
+    next(error);
   }
 };
 module.exports = { authMiddleware };

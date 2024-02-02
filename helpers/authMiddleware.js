@@ -20,17 +20,22 @@ const authMiddleware = async (req, res, next) => {
   try {
     const { id } = jwt.verify(token, SECRET_KEY);
     const user = await User.findById(id);
+    if (!user) {
+      next(HttpError(401));
+    }
+    console.log("user", user);
     req.user = user;
     // res.status(200).json(user);
+    next();
   } catch (error) {
+    console.log(error);
     if (
       error.name === "TokenExpiredError" ||
       error.name === "JsonWebTokenError"
     ) {
       next(HttpError(401, "Token is not valid"));
     }
-    next(error);
+    next();
   }
-  next();
 };
 module.exports = { authMiddleware };

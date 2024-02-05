@@ -8,7 +8,10 @@ const { Contact } = require("../models/contact");
 
 const getAllContacts = async (req, res) => {
   try {
-    const result = await Contact.find();
+    const { _id: owner } = req.user;
+
+    const result = await Contact.find({ owner });
+
     res.status(200).json(result);
   } catch (error) {
     throw HttpError(error.status, error.message);
@@ -32,8 +35,12 @@ const getOneContact = async (req, res, next) => {
 
 const deleteContact = async (req, res, next) => {
   try {
+    const { id: owner } = req.user;
     const { contactId } = req.params;
-    const result = await Contact.findByIdAndDelete(contactId);
+    const result = await Contact.findByIdAndDelete({
+      _id: contactId,
+      owner,
+    });
     if (!result) {
       throw HttpError(404, "Not found");
     }
@@ -51,7 +58,8 @@ const createContact = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
 
-    const result = await Contact.create(req.body);
+    const { _id: owner } = req.user;
+    const result = await Contact.create({ ...req.body, owner });
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -72,7 +80,7 @@ const updateContact = async (req, res, next) => {
     const result = await Contact.findByIdAndUpdate(contactId, req.body, {
       new: true,
     });
-    console.log("Updated contact:", result);
+
     if (!result) {
       throw HttpError(400, "Not found");
     }

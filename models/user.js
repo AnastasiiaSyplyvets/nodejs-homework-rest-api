@@ -25,6 +25,10 @@ const userSchema = new Schema({
     default: null,
   },
   contacts: [Types.ObjectId],
+  avatarURL: {
+    type: String,
+    default: "",
+  },
 });
 
 const User = model("user", userSchema);

@@ -2,6 +2,7 @@ const HttpError = require("../../helpers/HttpError");
 const { User } = require("../../models/user");
 const { registerSchema } = require("../../schemas/authSchema");
 const bcrypt = require("bcryptjs");
+const gravatar = require("gravatar");
 
 const registration = async (req, res, next) => {
   try {
@@ -18,9 +19,12 @@ const registration = async (req, res, next) => {
     }
     const { password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    const avatarUser = gravatar.url(email, { s: "200", r: "pg", d: "404" });
     const newUser = await User.create({
       ...req.body,
       password: hashedPassword,
+      avatarURL: avatarUser,
     });
 
     res.status(201).json({
@@ -29,8 +33,6 @@ const registration = async (req, res, next) => {
     });
   } catch (error) {
     res.status(error.status).json(error.message);
-    // console.log(error.message);
-    // next(error);
   }
 };
 module.exports = { registration };

@@ -14,9 +14,6 @@ dotenv.config();
 
 const { DB_HOST } = process.env;
 
-console.log(DB_HOST);
-//   const DB_HOST =
-//   "mongodb+srv://flizz:Kx59n8EmHVKAsj-@cluster0.lmg7zjz.mongodb.net/";
 mongoose
   .connect(DB_HOST)
   .then(() => {

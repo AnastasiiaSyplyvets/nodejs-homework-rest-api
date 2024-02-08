@@ -2,6 +2,7 @@ const { User } = require("../../models/user");
 const path = require("path");
 const fs = require("fs/promises");
 const HttpError = require("../../helpers/HttpError");
+const Jimp = require("jimp");
 // const Jimp = require("jimp");
 
 const uploadAvatar = async (req, res, next) => {
@@ -14,30 +15,13 @@ const uploadAvatar = async (req, res, next) => {
   const publicPath = path.resolve("public/avatar", fileName);
 
   try {
+    const img = await Jimp.read(tempPath);
+    await img
+      .autocrop()
+      .cover(250, 250, Jimp.HORIZONTAL_ALIGN_CENTER)
+      .writeAsync(tempPath);
+
     await fs.rename(tempPath, publicPath);
-
-    // await Jimp.read(publicPath)
-    //   .then((publicPath) => {
-    //     return publicPath
-    //       .resize(250, 250) // resize
-    //       .quality(60) // set JPEG quality
-    //       .greyscale() // set greyscale
-    //       .write(`${publicPath}.jpeg`);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
-
-    // const newAvatar = Jimp.read(publicPath, (err, publicPath) => {
-    //   if (err) throw err;
-    //   publicPath
-    //     .resize(250, 250) // resize
-    //     .quality(60) // set JPEG quality
-    //     .greyscale() // set greyscale
-    //     .write("lena-small-bw.jpg"); // save
-    // });
-
-    // console.log("newAvatar", newAvatar);
 
     const updatedUser = await User.findByIdAndUpdate(
       _id,

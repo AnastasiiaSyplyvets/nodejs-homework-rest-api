@@ -3,9 +3,11 @@ const path = require("path");
 const fs = require("fs/promises");
 const HttpError = require("../../helpers/HttpError");
 const Jimp = require("jimp");
-// const Jimp = require("jimp");
 
 const uploadAvatar = async (req, res, next) => {
+  if (!req.file) {
+    throw HttpError(400, "Please upload the file");
+  }
   const { filename } = req.file;
   const { _id } = req.user;
 
